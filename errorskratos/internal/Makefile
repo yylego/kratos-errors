@@ -2,7 +2,7 @@ ERROR_PROTO_FILES=$(shell find errorspb -name *.proto)
 
 .PHONY: install
 install:
-	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v3@latest
 	@echo "success!"
 
 .PHONY: generate
