@@ -22,7 +22,7 @@ Advanced Kratos error handling package with type-safe operations and nil interfa
 ## Main Features
 
 🎯 **Type-Safe Error Handling**: Simplified API to manipulate Kratos errors without naming conflicts
-⚡ **Safe Error Handling**: Solves Go's notorious (*T)(nil) != nil trap through intelligent adaptation
+⚡ **Safe Error Handling**: Solves Go's notorious (\*T)(nil) != nil trap through intelligent adaptation
 🔄 **Testing Integration**: Complete testify/assert and testify/require helpers to test Kratos errors
 
 ## Installation
@@ -79,14 +79,14 @@ import "github.com/yylego/kratos-errors/errorskratos/must/erkassert"
 
 func TestSomething(t *testing.T) {
     var erk *errors.Error
-    
+
     // Assert no error (handles nil interface with safe checks)
     erkassert.NoError(t, erk)
-    
+
     // Assert error exists
     erk = errors.InternalServer("SERVER_ERROR", "database failed")
     erkassert.Error(t, erk)
-    
+
     // Assert error equivalence
     expected := errors.BadRequest("INVALID_INPUT", "test")
     erkassert.Is(t, expected, erk)
@@ -115,7 +115,7 @@ import "github.com/yylego/kratos-errors/errorskratos/must/erkmust"
 
 func criticalOperation() {
     erk := doSomethingImportant()
-    
+
     // Panic if error exists (with structured logging)
     erkmust.Done(erk)
 
@@ -162,7 +162,7 @@ The `Erk` type alias avoids import conflicts between standard `errors` package a
 // Instead of this confusion:
 import (
     stderrors "errors"
-    "github.com/go-kratos/kratos/v2/errors"
+    "github.com/go-kratos/kratos/v3/errors"
 )
 
 // Just use:

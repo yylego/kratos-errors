@@ -10,7 +10,7 @@
 package erkassert
 
 import (
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/yylego/kratos-errors/errorskratos/erkadapt"
 )

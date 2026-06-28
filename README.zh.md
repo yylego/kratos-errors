@@ -22,7 +22,7 @@
 ## 核心特性
 
 🎯 **类型安全错误处理**: 为 Kratos 错误操作提供简化的 API，避免命名冲突  
-⚡ **安全错误包装**: 通过智能适配解决 Go 臭名昭著的 (*T)(nil) != nil 陷阱  
+⚡ **安全错误包装**: 通过智能适配解决 Go 臭名昭著的 (\*T)(nil) != nil 陷阱  
 🔄 **测试集成**: 为 Kratos 错误提供完整的 testify/assert 和 testify/require 包装器
 
 ## 安装
@@ -79,14 +79,14 @@ import "github.com/yylego/kratos-errors/errorskratos/must/erkassert"
 
 func TestSomething(t *testing.T) {
     var erk *errors.Error
-    
+
     // 断言没有错误（正确处理 nil 接口）
     erkassert.NoError(t, erk)
-    
+
     // 断言错误存在
     erk = errors.InternalServer("SERVER_ERROR", "数据库失败")
     erkassert.Error(t, erk)
-    
+
     // 断言错误相等
     expected := errors.BadRequest("INVALID_INPUT", "测试")
     erkassert.Is(t, expected, erk)
@@ -100,10 +100,10 @@ import "github.com/yylego/kratos-errors/errorskratos/must/erkrequire"
 
 func TestCritical(t *testing.T) {
     var erk *errors.Error
-    
+
     // 要求没有错误（如果存在错误立即失败）
     erkrequire.NoError(t, erk)
-    
+
     // 只有在没有错误时继续...
 }
 ```
@@ -115,10 +115,10 @@ import "github.com/yylego/kratos-errors/errorskratos/must/erkmust"
 
 func criticalOperation() {
     erk := doSomethingImportant()
-    
+
     // 如果存在错误则 panic（带结构化日志）
     erkmust.Done(erk)
-    
+
     // 或使用 Must（相同行为，不同名称）
     erkmust.Must(erk)
 }
@@ -162,7 +162,7 @@ fmt.Println(err == nil)  // false (!!)
 // 不用这种混乱的方式：
 import (
     stderrors "errors"
-    "github.com/go-kratos/kratos/v2/errors"
+    "github.com/go-kratos/kratos/v3/errors"
 )
 
 // 只需使用：

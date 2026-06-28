@@ -3,7 +3,7 @@ package newerk
 import (
 	"fmt"
 
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/errors"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 

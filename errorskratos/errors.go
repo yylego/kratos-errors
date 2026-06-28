@@ -10,7 +10,7 @@
 package errorskratos
 
 import (
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/errors"
 )
 
 // Erk provides simplified type alias to avoid naming conflicts with standard packages

@@ -10,7 +10,7 @@
 package erkadapt
 
 import (
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/errors"
 )
 
 // Adapt performs intelligent conversion from Kratos error to standard error interface
