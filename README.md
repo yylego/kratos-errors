@@ -60,9 +60,6 @@ erk := errorskratos.From(err)
 ```go
 import "github.com/yylego/kratos-errors/errorskratos/newerk"
 
-// Configure reason code field name to store enum numeric value
-newerk.SetReasonCodeFieldName("numeric_reason_code_enum")
-
 // Create type-safe error with enum
 erk := newerk.NewError(404, ErrorReason_USER_NOT_FOUND, "user %d not found", userID)
 

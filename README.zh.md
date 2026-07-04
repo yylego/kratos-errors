@@ -60,9 +60,6 @@ erk := errorskratos.From(err)
 ```go
 import "github.com/yylego/kratos-errors/errorskratos/newerk"
 
-// 配置原因码字段名用于存储枚举数值
-newerk.SetReasonCodeFieldName("numeric_reason_code_enum")
-
 // 使用枚举创建类型安全的错误
 erk := newerk.NewError(404, ErrorReason_USER_NOT_FOUND, "用户 %d 未找到", userID)
 
