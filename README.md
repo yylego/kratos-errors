@@ -22,13 +22,14 @@ Advanced Kratos error handling package with type-safe operations and nil interfa
 ## Main Features
 
 🎯 **Type-Safe Error Handling**: Simplified API to manipulate Kratos errors without naming conflicts
+🏗️ **Typed Error Creation**: Build and match errors straight from generated reason enums (kratoserrors)
 ⚡ **Safe Error Handling**: Solves Go's notorious (\*T)(nil) != nil trap through intelligent adaptation
 🔄 **Testing Integration**: Complete testify/assert and testify/require helpers to test Kratos errors
 
 ## Installation
 
 ```bash
-go get github.com/yylego/kratos-errors/errorskratos
+go get github.com/yylego/kratos-errors
 ```
 
 ## Usage
@@ -55,16 +56,16 @@ if errorskratos.Is(erk1, erk2) {
 erk := errorskratos.From(err)
 ```
 
-### Concise Error Creation (newerk)
+### Concise Error Creation (kratoserrors)
 
 ```go
-import "github.com/yylego/kratos-errors/errorskratos/newerk"
+import "github.com/yylego/kratos-errors/kratoserrors"
 
 // Create type-safe error with enum
-erk := newerk.NewError(404, ErrorReason_USER_NOT_FOUND, "user %d not found", userID)
+erk := kratoserrors.NewError(404, ErrorReason_USER_NOT_FOUND, "user %d not found", userID)
 
 // Check error type
-if newerk.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
+if kratoserrors.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
     // Handle user not found error
 }
 ```
@@ -124,16 +125,22 @@ func criticalOperation() {
 ## Package Structure
 
 ```
-errorskratos/
-├── errors.go           # Core API (As, Is, From)
-├── newerk/             # Concise error creation API
-├── erkadapt/           # Nil interface adaptation
-├── must/               # Testing and enforcement tools
-│   ├── erkassert/      # testify/assert helpers
-│   ├── erkrequire/     # testify/require helpers
-│   └── erkmust/        # Production panic utilities
-└── internal/
-    └── errorspb/       # Example error definitions
+kratos-errors/
+├── errorskratos/       # Error inspection (As, Is, From)
+│   ├── errors.go
+│   ├── erkadapt/       # Nil interface adaptation
+│   └── must/           # Testing and enforcement tools
+│       ├── erkassert/  # testify/assert helpers
+│       ├── erkrequire/ # testify/require helpers
+│       └── erkmust/    # Production panic utilities
+├── kratoserrors/       # Typed error creation and check (NewError, IsError)
+├── Makefile            # CI: test/coverage/bench
+└── internal/           # PB generation via buf
+    ├── buf.yaml
+    ├── buf.gen.yaml
+    ├── Makefile        # generate PB via buf
+    ├── errorspb/       # proto + generated pb.go
+    └── proto3ps/       # vendored proto imports (errors + google)
 ```
 
 ## Core Capabilities

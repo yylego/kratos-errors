@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/yylego/kratos-errors/errorskratos"
-	"github.com/yylego/kratos-errors/errorskratos/internal/errorspb"
 	"github.com/yylego/kratos-errors/errorskratos/must/erkmust"
+	"github.com/yylego/kratos-errors/internal/errorspb"
 	"github.com/yylego/must"
 )
 

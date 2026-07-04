@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-kratos/kratos/v3/errors"
 	"github.com/yylego/erero"
-	"github.com/yylego/kratos-errors/errorskratos/internal/errorspb"
 	"github.com/yylego/kratos-errors/errorskratos/must/erkrequire"
+	"github.com/yylego/kratos-errors/internal/errorspb"
 )
 
 // TestNoError validates erkrequire.NoError with fail-fast error checking

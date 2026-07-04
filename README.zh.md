@@ -22,13 +22,14 @@
 ## 核心特性
 
 🎯 **类型安全错误处理**: 为 Kratos 错误操作提供简化的 API，避免命名冲突  
+🏗️ **类型化错误创建**: 基于生成的 reason 枚举直接造错误、判错误（kratoserrors）  
 ⚡ **安全错误包装**: 通过智能适配解决 Go 臭名昭著的 (\*T)(nil) != nil 陷阱  
 🔄 **测试集成**: 为 Kratos 错误提供完整的 testify/assert 和 testify/require 包装器
 
 ## 安装
 
 ```bash
-go get github.com/yylego/kratos-errors/errorskratos
+go get github.com/yylego/kratos-errors
 ```
 
 ## 使用方法
@@ -55,16 +56,16 @@ if errorskratos.Is(erk1, erk2) {
 erk := errorskratos.From(err)
 ```
 
-### 简洁错误创建 (newerk)
+### 简洁错误创建 (kratoserrors)
 
 ```go
-import "github.com/yylego/kratos-errors/errorskratos/newerk"
+import "github.com/yylego/kratos-errors/kratoserrors"
 
 // 使用枚举创建类型安全的错误
-erk := newerk.NewError(404, ErrorReason_USER_NOT_FOUND, "用户 %d 未找到", userID)
+erk := kratoserrors.NewError(404, ErrorReason_USER_NOT_FOUND, "用户 %d 未找到", userID)
 
 // 检查错误类型
-if newerk.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
+if kratoserrors.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
     // 处理用户未找到错误
 }
 ```
@@ -124,16 +125,22 @@ func criticalOperation() {
 ## 包结构
 
 ```
-errorskratos/
-├── errors.go           # 核心 API (As, Is, From)
-├── newerk/             # 简洁错误创建 API
-├── erkadapt/           # Nil 接口适配
-├── must/               # 测试和强制执行工具
-│   ├── erkassert/      # testify/assert 包装器
-│   ├── erkrequire/     # testify/require 包装器
-│   └── erkmust/        # 生产环境 panic 工具
-└── internal/
-    └── errorspb/       # 错误定义示例
+kratos-errors/
+├── errorskratos/       # 错误检查 (As, Is, From)
+│   ├── errors.go
+│   ├── erkadapt/       # Nil 接口适配
+│   └── must/           # 测试和强制执行工具
+│       ├── erkassert/  # testify/assert 包装器
+│       ├── erkrequire/ # testify/require 包装器
+│       └── erkmust/    # 生产环境 panic 工具
+├── kratoserrors/       # 类型安全的错误创建与判断 (NewError, IsError)
+├── Makefile            # CI：测试/覆盖率/基准
+└── internal/           # 用 buf 生成 PB（仅内部）
+    ├── buf.yaml
+    ├── buf.gen.yaml
+    ├── Makefile        # 用 buf 生成 PB
+    ├── errorspb/       # proto + 生成的 pb.go
+    └── proto3ps/       # vendor 的 proto 依赖 (errors + google)
 ```
 
 ## 核心能力

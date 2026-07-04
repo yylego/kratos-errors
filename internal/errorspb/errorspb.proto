@@ -4,7 +4,7 @@ package internal.errorspb;
 
 import "errors/errors.proto";
 
-option go_package = "github.com/yylego/kratos-errors/errorskratos/internal/errorspb;errorspb";
+option go_package = "github.com/yylego/kratos-errors/internal/errorspb;errorspb";
 
 enum ErrorReason {
   option (errors.default_code) = 500;
