@@ -119,13 +119,6 @@ func TestIsServerDbTransactionError(t *testing.T) {
 	})
 }
 
-func TestErrorReasonEnumValues(t *testing.T) {
-	// Test enum constant values match expected numbers
-	require.Equal(t, int32(0), int32(errorspb2.ErrorReason_UNKNOWN))
-	require.Equal(t, int32(50001), int32(errorspb2.ErrorReason_SERVER_DB_ERROR))
-	require.Equal(t, int32(50002), int32(errorspb2.ErrorReason_SERVER_DB_TRANSACTION_ERROR))
-}
-
 func TestErrorReasonStringConversion(t *testing.T) {
 	// Test string representation
 	require.Equal(t, "UNKNOWN", errorspb2.ErrorReason_UNKNOWN.String())

@@ -39,8 +39,7 @@ func TestAs(t *testing.T) {
 		// 具体原因请看这里 https://go.dev/doc/faq#nil_error 因为类型和值都为nil的才是nil否则不是
 
 		res, ok := errorskratos.As(err)
-		require.True(t, ok)
-		t.Log(res)
+		require.False(t, ok)
 		require.Nil(t, res)
 	})
 }
@@ -73,4 +72,13 @@ func TestFrom(t *testing.T) {
 	var err error = erk1
 	erk2 := errorskratos.From(err)
 	require.True(t, errorskratos.Is(erk1, erk2))
+}
+
+// TestFromError checks FromError gives back the Kratos error that an error value holds
+// TestFromError 验证 FromError 取回 error 值里装着的 Kratos 错误
+func TestFromError(t *testing.T) {
+	erk1 := errorspb.ErrorServerDbError("wrong")
+	var err error = erk1
+	erk2 := errorskratos.FromError(err)
+	require.Equal(t, erk1, erk2)
 }

@@ -14,10 +14,12 @@ import (
 type Erk = errors.Error
 
 // As converts a generic error to a Kratos error and reports success.
+// A nil *errors.Error passed as error gives false, so ok means erk is non-nil.
 //
 // As 把通用 error 转成 Kratos 错误，并返回是否成功。
+// 当作 error 传进来的 nil *errors.Error 返回 false，所以 ok 为 true 时 erk 一定不为 nil。
 func As(err error) (erk *errors.Error, ok bool) {
-	if ok = errors.As(err, &erk); ok {
+	if errors.As(err, &erk) && erk != nil {
 		return erk, true
 	}
 	return nil, false

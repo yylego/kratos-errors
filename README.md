@@ -1,9 +1,13 @@
+<!-- TEMPLATE (EN) BEGIN: BADGES -->
+
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yylego/kratos-errors/release.yml?branch=main&label=BUILD)](https://github.com/yylego/kratos-errors/actions/workflows/release.yml?query=branch%3Amain)
 [![GoDoc](https://pkg.go.dev/badge/github.com/yylego/kratos-errors)](https://pkg.go.dev/github.com/yylego/kratos-errors)
 [![Coverage Status](https://img.shields.io/coveralls/github/yylego/kratos-errors/main.svg)](https://coveralls.io/github/yylego/kratos-errors?branch=main)
-[![Supported Go Versions](https://img.shields.io/badge/Go-1.25+-lightgrey.svg)](https://go.dev/)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.26%2B-lightgrey.svg)](https://go.dev/)
 [![GitHub Release](https://img.shields.io/github/release/yylego/kratos-errors.svg)](https://github.com/yylego/kratos-errors/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yylego/kratos-errors)](https://goreportcard.com/report/github.com/yylego/kratos-errors)
+
+<!-- TEMPLATE (EN) CLOSE: BADGES -->
 
 # kratos-errors
 
@@ -17,14 +21,14 @@ Advanced Kratos error handling package with type-safe operations and nil interfa
 
 [中文说明](README.zh.md)
 
-<!-- TEMPLATE (EN) END: LANGUAGE NAVIGATION -->
+<!-- TEMPLATE (EN) CLOSE: LANGUAGE NAVIGATION -->
 
 ## Main Features
 
-🎯 **Type-Safe Error Handling**: Simplified API to manipulate Kratos errors without naming conflicts
-🏗️ **Typed Error Creation**: Build and match errors straight from generated reason enums (kratoserrors)
-⚡ **Safe Error Handling**: Solves Go's notorious (\*T)(nil) != nil trap through intelligent adaptation
-🔄 **Testing Integration**: Complete testify/assert and testify/require helpers to test Kratos errors
+- 🏗️ **Errors from Reason Enums**: `kratoserrors.NewError` builds a Kratos error straight from a generated reason enum, and `IsError` matches it
+- ⚡ **Safe with `(*T)(nil)`**: a nil `*errors.Error` passed as `error` counts as no error in `As`, `IsError` and the test helpers
+- 🔄 **Test Helpers**: `erkassert` / `erkrequire` wrap testify, `erkmust` panics on a Kratos error
+- 🎯 **No Import Clash**: the `errorskratos.Erk` alias saves importing two packages both named `errors`
 
 ## Installation
 
@@ -64,11 +68,18 @@ import "github.com/yylego/kratos-errors/kratoserrors"
 // Create type-safe error with enum
 erk := kratoserrors.NewError(404, ErrorReason_USER_NOT_FOUND, "user %d not found", userID)
 
+// Keep the cause with %w, the same as in fmt.Errorf, so errors.Is and errors.As reach it
+erk = kratoserrors.NewError(500, ErrorReason_SERVER_DB_ERROR, "find user %d: %w", userID, err)
+
 // Check error type
 if kratoserrors.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
     // Handle user not found error
 }
 ```
+
+### Reason and the Client Enum
+
+`NewError` puts the enum value name into the fault's reason (e.g. `USER_NOT_FOUND`) and adds no extra field. A client that needs the numeric enum value maps the reason back through its own generated enum: with protobuf-ts, `ErrorReason[reason]` gives `ErrorReason.USER_NOT_FOUND`, so the fault does not need to hold the numeric value in metadata. The type constraint asks the enum to have the two methods that protoc-gen-go generates (`String` and the numeric method), so a plain string type gets rejected at compile time.
 
 ### Testing with Assert
 
@@ -86,8 +97,8 @@ func TestSomething(t *testing.T) {
     erkassert.Error(t, erk)
 
     // Assert error equivalence
-    expected := errors.BadRequest("INVALID_INPUT", "test")
-    erkassert.Is(t, expected, erk)
+    expected := errors.InternalServer("SERVER_ERROR", "a different text")
+    erkassert.Is(t, expected, erk) // Reason and code match, the message is not compared
 }
 ```
 
@@ -156,7 +167,7 @@ fmt.Println(erk == nil)  // true
 fmt.Println(err == nil)  // false (!!)
 ```
 
-This causes issues in error handling. kratos-errors solves this through intelligent adaptation in each function.
+`erkadapt.Adapt` turns a nil `*errors.Error` into an untyped `nil`, and `As`, `IsError`, `erkassert`, `erkrequire` and `erkmust` treat it as no error.
 
 ### Clean Naming
 
@@ -176,23 +187,23 @@ import "github.com/yylego/kratos-errors/errorskratos"
 
 ## More Projects
 
-- [kratos-ebz](https://github.com/yylego/kratos-ebz) - Error type that doesn't implement error interface
+- [kratos-ebz](https://github.com/yylego/kratos-ebz) - The biz error of Kratos: biz methods return `*Ebz`, which does not implement `error`
 
 <!-- TEMPLATE (EN) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-09-26 07:39:27.188023 +0000 UTC -->
+<!-- VERSION 2025-11-25 03:52:28.131064 +0000 UTC -->
 
 ## 📄 License
 
-MIT License. See [LICENSE](LICENSE).
+MIT License - see [LICENSE](LICENSE).
 
 ---
 
-## 🤝 Contributing
+## 💬 Contact & Feedback
 
 Contributions are welcome! Report bugs, suggest features, and contribute code:
 
-- 🐛 **Found a mistake?** Open an issue on GitHub with reproduction steps
-- 💡 **Have a feature idea?** Create an issue to discuss the suggestion
+- 🐛 **Mistake reports?** Open an issue on GitHub with reproduction steps
+- 💡 **Fresh ideas?** Create an issue to discuss
 - 📖 **Documentation confusing?** Report it so we can improve
 - 🚀 **Need new features?** Share the use cases to help us understand requirements
 - ⚡ **Performance issue?** Help us optimize through reporting slow operations
@@ -213,7 +224,7 @@ New code contributions, follow this process:
 4. **Branch**: Create a feature branch (`git checkout -b feature/xxx`).
 5. **Code**: Implement the changes with comprehensive tests
 6. **Testing**: (Golang project) Ensure tests pass (`go test ./...`) and follow Go code style conventions
-7. **Documentation**: Update documentation to support client-facing changes and use significant commit messages
+7. **Documentation**: Update documentation to support client-facing changes
 8. **Stage**: Stage changes (`git add .`)
 9. **Commit**: Commit changes (`git commit -m "Add feature xxx"`) ensuring backward compatible code
 10. **Push**: Push to the branch (`git push origin feature/xxx`).
@@ -236,10 +247,4 @@ Welcome to contribute to this project via submitting merge requests and reportin
 
 **Have Fun Coding with this package!** 🎉🎉🎉
 
-<!-- TEMPLATE (EN) END: STANDARD PROJECT FOOTER -->
-
----
-
-## GitHub Stars
-
-[![Stargazers](https://starchart.cc/yylego/kratos-errors.svg?variant=adaptive)](https://starchart.cc/yylego/kratos-errors)
+<!-- TEMPLATE (EN) CLOSE: STANDARD PROJECT FOOTER -->

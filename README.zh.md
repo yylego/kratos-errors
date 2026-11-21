@@ -1,9 +1,13 @@
+<!-- TEMPLATE (ZH) BEGIN: BADGES -->
+
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yylego/kratos-errors/release.yml?branch=main&label=BUILD)](https://github.com/yylego/kratos-errors/actions/workflows/release.yml?query=branch%3Amain)
 [![GoDoc](https://pkg.go.dev/badge/github.com/yylego/kratos-errors)](https://pkg.go.dev/github.com/yylego/kratos-errors)
 [![Coverage Status](https://img.shields.io/coveralls/github/yylego/kratos-errors/main.svg)](https://coveralls.io/github/yylego/kratos-errors?branch=main)
-[![Supported Go Versions](https://img.shields.io/badge/Go-1.25+-lightgrey.svg)](https://go.dev/)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.26%2B-lightgrey.svg)](https://go.dev/)
 [![GitHub Release](https://img.shields.io/github/release/yylego/kratos-errors.svg)](https://github.com/yylego/kratos-errors/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yylego/kratos-errors)](https://goreportcard.com/report/github.com/yylego/kratos-errors)
+
+<!-- TEMPLATE (ZH) CLOSE: BADGES -->
 
 # kratos-errors
 
@@ -17,14 +21,14 @@
 
 [ENGLISH README](README.md)
 
-<!-- TEMPLATE (ZH) END: LANGUAGE NAVIGATION -->
+<!-- TEMPLATE (ZH) CLOSE: LANGUAGE NAVIGATION -->
 
 ## 核心特性
 
-🎯 **类型安全错误处理**: 为 Kratos 错误操作提供简化的 API，避免命名冲突  
-🏗️ **类型化错误创建**: 基于生成的 reason 枚举直接造错误、判错误（kratoserrors）  
-⚡ **安全错误包装**: 通过智能适配解决 Go 臭名昭著的 (\*T)(nil) != nil 陷阱  
-🔄 **测试集成**: 为 Kratos 错误提供完整的 testify/assert 和 testify/require 包装器
+- 🏗️ **按 reason 枚举造错误**：`kratoserrors.NewError` 直接用生成的 reason 枚举造 Kratos 错误，`IsError` 用同一个枚举判断
+- ⚡ **不怕 `(*T)(nil)`**：nil 的 `*errors.Error` 当作 `error` 传进来，`As`、`IsError` 和测试助手都当作没有错误
+- 🔄 **测试助手**：`erkassert` / `erkrequire` 封装 testify，`erkmust` 遇到 Kratos 错误就 panic
+- 🎯 **不撞包名**：用 `errorskratos.Erk` 别名，就不用同时导入两个都叫 `errors` 的包
 
 ## 安装
 
@@ -64,11 +68,18 @@ import "github.com/yylego/kratos-errors/kratoserrors"
 // 使用枚举创建类型安全的错误
 erk := kratoserrors.NewError(404, ErrorReason_USER_NOT_FOUND, "用户 %d 未找到", userID)
 
+// 用 %w 把原始错误带上，跟 fmt.Errorf 一样，errors.Is 和 errors.As 能找到它
+erk = kratoserrors.NewError(500, ErrorReason_SERVER_DB_ERROR, "查询用户 %d: %w", userID, err)
+
 // 检查错误类型
 if kratoserrors.IsError(err, ErrorReason_USER_NOT_FOUND, 404) {
     // 处理用户未找到错误
 }
 ```
+
+### reason 与前端枚举的对应
+
+`NewError` 把枚举值的名字放进错误的 reason（如 `USER_NOT_FOUND`），不额外加任何字段。客户端要用枚举的数字值时，用它自己生成的枚举从 reason 反查即可：protobuf-ts 里 `ErrorReason[reason]` 就得到 `ErrorReason.USER_NOT_FOUND`，所以错误里不需要再把数字值放进 metadata。类型约束要求枚举同时有 protoc-gen-go 生成的两个方法（`String` 和取数字值的方法），这样普通的字符串类型在编译时就会被拒绝。
 
 ### 使用 Assert 测试
 
@@ -86,8 +97,8 @@ func TestSomething(t *testing.T) {
     erkassert.Error(t, erk)
 
     // 断言错误相等
-    expected := errors.BadRequest("INVALID_INPUT", "测试")
-    erkassert.Is(t, expected, erk)
+    expected := errors.InternalServer("SERVER_ERROR", "另一条消息")
+    erkassert.Is(t, expected, erk) // reason 和 code 一致即可，不比较消息
 }
 ```
 
@@ -156,7 +167,7 @@ fmt.Println(erk == nil)  // true
 fmt.Println(err == nil)  // false (!!)
 ```
 
-这在错误处理中会导致问题。kratos-errors 通过在所有函数中进行智能适配来解决这个问题。
+`erkadapt.Adapt` 把 nil 的 `*errors.Error` 转成无类型的 `nil`；`As`、`IsError`、`erkassert`、`erkrequire`、`erkmust` 都把它当作没有错误。
 
 ### 清晰的命名
 
@@ -176,26 +187,26 @@ import "github.com/yylego/kratos-errors/errorskratos"
 
 ## 相关项目
 
-- [kratos-ebz](https://github.com/yylego/kratos-ebz) - 不实现 error 接口的错误包装器
+- [kratos-ebz](https://github.com/yylego/kratos-ebz) - Kratos 的业务错误：biz 方法返回 `*Ebz`，它不实现 `error` 接口
 
 <!-- TEMPLATE (ZH) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-09-26 07:39:27.188023 +0000 UTC -->
+<!-- VERSION 2025-11-25 03:52:28.131064 +0000 UTC -->
 
 ## 📄 许可证类型
 
-MIT 许可证。详见 [LICENSE](LICENSE)。
+MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 ---
 
-## 🤝 项目贡献
+## 💬 联系与反馈
 
 非常欢迎贡献代码！报告 BUG、建议功能、贡献代码：
 
-- 🐛 **发现问题？** 在 GitHub 上提交问题并附上重现步骤
-- 💡 **功能建议？** 创建 issue 讨论您的想法
-- 📖 **文档疑惑？** 报告问题，帮助我们改进文档
+- 🐛 **问题报告？** 在 GitHub 上提交问题并附上重现步骤
+- 💡 **新颖思路？** 创建 issue 讨论
+- 📖 **文档疑惑？** 报告问题，帮助我们完善文档
 - 🚀 **需要功能？** 分享使用场景，帮助理解需求
-- ⚡ **性能瓶颈？** 报告慢操作，帮助我们优化性能
+- ⚡ **性能瓶颈？** 报告慢操作，协助解决性能问题
 - 🔧 **配置困扰？** 询问复杂设置的相关问题
 - 📢 **关注进展？** 关注仓库以获取新版本和功能
 - 🌟 **成功案例？** 分享这个包如何改善工作流程
@@ -213,7 +224,7 @@ MIT 许可证。详见 [LICENSE](LICENSE)。
 4. **分支**：创建功能分支（`git checkout -b feature/xxx`）
 5. **编码**：实现您的更改并编写全面的测试
 6. **测试**：（Golang 项目）确保测试通过（`go test ./...`）并遵循 Go 代码风格约定
-7. **文档**：为面向用户的更改更新文档，并使用有意义的提交消息
+7. **文档**：面向用户的更改需要更新文档
 8. **暂存**：暂存更改（`git add .`）
 9. **提交**：提交更改（`git commit -m "Add feature xxx"`）确保向后兼容的代码
 10. **推送**：推送到分支（`git push origin feature/xxx`）
@@ -225,7 +236,7 @@ MIT 许可证。详见 [LICENSE](LICENSE)。
 
 ## 🌟 项目支持
 
-非常欢迎通过提交 Merge Request 和报告问题来为此项目做出贡献。
+非常欢迎通过提交 Merge Request 和报告问题来贡献此项目。
 
 **项目支持：**
 
@@ -236,10 +247,4 @@ MIT 许可证。详见 [LICENSE](LICENSE)。
 
 **祝你用这个包编程愉快！** 🎉🎉🎉
 
-<!-- TEMPLATE (ZH) END: STANDARD PROJECT FOOTER -->
-
----
-
-## GitHub 标星点赞
-
-[![标星点赞](https://starchart.cc/yylego/kratos-errors.svg?variant=adaptive)](https://starchart.cc/yylego/kratos-errors)
+<!-- TEMPLATE (ZH) CLOSE: STANDARD PROJECT FOOTER -->

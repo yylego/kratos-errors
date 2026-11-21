@@ -33,7 +33,7 @@ func TestDone(t *testing.T) {
 	t.Run("must done incompatible", func(t *testing.T) {
 		require.Panics(t, func() {
 			var erk *errorskratos.Erk
-			must.Done(erk) //这里也不知道是什么原因，这个是不可用的，请用前面的判定函数
+			must.Done(erk) // A nil *errors.Error passed as error is not nil, so must.Done panics, use erkmust.Done // nil 的 *errors.Error 当作 error 传进去就不再是 nil，所以 must.Done 会 panic，要用 erkmust.Done
 		})
 	})
 }
@@ -61,7 +61,7 @@ func TestMust(t *testing.T) {
 	t.Run("must must incompatible", func(t *testing.T) {
 		require.Panics(t, func() {
 			var erk *errorskratos.Erk
-			must.Must(erk) //这里也不知道是什么原因，这个是不可用的，请用前面的判定函数
+			must.Must(erk) // Same as above, use erkmust.Must // 同上，要用 erkmust.Must
 		})
 	})
 }

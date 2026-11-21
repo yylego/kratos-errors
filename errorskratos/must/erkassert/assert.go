@@ -13,21 +13,21 @@ import (
 // NoError asserts that erk is nil.
 //
 // NoError 断言 erk 为 nil。
-func NoError(t assert.TestingT, erk *errors.Error, msgAndArgs ...interface{}) bool {
+func NoError(t assert.TestingT, erk *errors.Error, msgAndArgs ...any) bool {
 	return assert.NoError(t, erkadapt.Adapt(erk), msgAndArgs...)
 }
 
 // Error asserts that erk is non-nil.
 //
 // Error 断言 erk 非 nil。
-func Error(t assert.TestingT, erk *errors.Error, msgAndArgs ...interface{}) bool {
+func Error(t assert.TestingT, erk *errors.Error, msgAndArgs ...any) bool {
 	return assert.Error(t, erkadapt.Adapt(erk), msgAndArgs...)
 }
 
 // Is asserts that two Kratos errors match on nil state, Reason and Code.
 //
 // Is 断言两个 Kratos 错误在 nil 状态、Reason 和 Code 上一致。
-func Is(t assert.TestingT, expected *errors.Error, erk *errors.Error, msgAndArgs ...interface{}) bool {
+func Is(t assert.TestingT, expected *errors.Error, erk *errors.Error, msgAndArgs ...any) bool {
 	if ok := assert.Equal(t, expected == nil, erk == nil, msgAndArgs...); !ok {
 		return false
 	}
